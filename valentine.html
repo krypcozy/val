@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Love Key</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root { --main-pink: #ff4d6d; --deep-rose: #800f2f; }
+        body { 
+            background: radial-gradient(circle at center, #1a0a0d 0%, #0a0a0a 100%);
+            overflow: hidden; 
+            transition: background 1s ease;
+        }
+        .glass {
+            background: rgba(255, 182, 193, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 77, 109, 0.2);
+            border-radius: 50px;
+            box-shadow: 0 0 40px rgba(255, 77, 109, 0.1);
+        }
+        /* Continuous floating hearts from bottom */
+        .ambient-heart {
+            position: absolute;
+            bottom: -50px;
+            animation: rise linear forwards;
+            color: var(--main-pink);
+            opacity: 0.6;
+            z-index: 0;
+        }
+        @keyframes rise {
+            to { transform: translateY(-110vh) translateX(var(--x-offset)); opacity: 0; }
+        }
+        /* Click-burst hearts */
+        .burst-heart {
+            position: absolute;
+            pointer-events: none;
+            animation: burst 1.5s ease-out forwards;
+            z-index: 50;
+        }
+        @keyframes burst {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: translate(var(--tw-x), var(--tw-y)) scale(1.5); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,77,109,0.1),transparent_70%)]"></div>
+
+    <div id="app" class="glass w-[340px] h-[650px] flex flex-col items-center justify-between py-16 px-8 text-center relative z-10 cursor-pointer overflow-hidden">
+        
+        <div class="text-pink-400 text-4xl mb-4 animate-pulse">🗝️</div>
+
+        <div id="content-area" class="flex-1 flex items-center">
+            <h1 id="main-text" class="text-3xl font-serif text-pink-50 leading-snug drop-shadow-lg transition-all duration-500">
+                You hold the key... <br><span class="text-lg text-pink-400/60 font-sans italic">Tap to unlock</span>
+            </h1>
+        </div>
+
+        <div class="text-pink-300/40 text-[10px] uppercase tracking-[0.3em] animate-bounce">
+            Keep Tapping
+        </div>
+    </div>
+
+    <script>
+        const messages = [
+            "so SONIA",
+            "In a sea of people...",
+            "You're the only one I see. ✨",
+            "Every day with you is a gift.",
+            "I wanted to ask you something...",
+            "Will you be my Valentine? 💖",
+            "If yes, screenshot this and send 🌹",
+            "Since you picked yes, where are you taking me?😂😂"
+        ];
+
+        let index = 0;
+        const app = document.getElementById('app');
+        const text = document.getElementById('main-text');
+
+        // Continuous ambient hearts from bottom
+        setInterval(() => {
+            const h = document.createElement('div');
+            h.innerHTML = ['❤️','💖','💕','💗'][Math.floor(Math.random()*4)];
+            h.className = 'ambient-heart';
+            h.style.left = Math.random() * 100 + 'vw';
+            h.style.setProperty('--x-offset', (Math.random() * 200 - 100) + 'px');
+            h.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            h.style.animationDuration = (Math.random() * 3 + 4) + 's';
+            document.body.appendChild(h);
+            setTimeout(() => h.remove(), 7000);
+        }, 300);
+
+        app.addEventListener('click', (e) => {
+            if (index < messages.length) {
+                // Change UI Colors slightly each click
+                document.body.style.background = 'radial-gradient(circle at center, #2a0a12 ${index * 10}%, #0a0a0a 100%)';// Change Text
+                text.style.opacity = 0;
+                text.style.transform = "scale(0.9)";
+                setTimeout(() => {
+                    text.innerHTML = messages[index];
+                    text.style.opacity = 1;
+                    text.style.transform = "scale(1)";
+                    index++;
+                }, 300);
+
+                // Create Burst of hearts from click location
+                for(let i=0; i<8; i++) createBurst(e.clientX, e.clientY);
+            }
+        });
+
+        function createBurst(x, y) {
+            const b = document.createElement('div');
+            b.innerHTML = '❤️';
+            b.className = 'burst-heart';
+            b.style.left = x + 'px';
+            b.style.top = y + 'px';
+            b.style.setProperty('--tw-x', (Math.random() * 200 - 100) + 'px');
+            b.style.setProperty('--tw-y', (Math.random() * -200 - 50) + 'px');
+            document.body.appendChild(b);
+            setTimeout(() => b.remove(), 1500);
+        }
+    </script>
+</body>
+</html>
